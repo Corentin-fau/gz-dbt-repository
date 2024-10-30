@@ -110,10 +110,20 @@ models:
         tests:
           - unique
           - not_null
+
+
   - name: finance_campaigns_day
     description: "data from all campaigns per day & finance data"
     columns: 
       - name: date_date
+        tests:
+          - unique
+          - not_null
+
+  - name: finance_campaigns_month
+    description: "data from all campaigns per month & finance data"
+    columns: 
+      - name: datemonth
         tests:
           - unique
           - not_null
