@@ -1,36 +1,68 @@
- # schema.yml
+# schema.yml
 
- version: 2
+version: 2
 
- sources:
-   - name: gz_raw_data
-     tables:
-       - name: sales
-         identifier: raw_gz_sales
-         description: sales of Greenweez / we have on row per product_id found in each orders_id
-         freshness:
-           warn_after: {count: 90 , period: day}
-         loaded_at_field: "CAST(date_date AS TIMESTAMP)"
-         tests:
+sources:
+  - name: gz_raw_data
+    tables:
+      - name: sales
+        identifier: raw_gz_sales
+        description: "Sales of Greenweez. We have one row per product_id found in each orders_id."
+        freshness:
+          warn_after: {count: 90, period: day}
+        loaded_at_field: "date_date"  # Pas besoin de CAST ici, il est fait dans SQL, cela peut générer une erreur
+        tests:
           - unique:
-              column_name: "(orders_id||'-'|| pdt_id)" 
+              column_name: "orders_id || '-' || pdt_id"
           - not_null:
-              column_name: "(orders_id||'-'|| pdt_id)"
+              column_name: "orders_id || '-' || pdt_id"
 
-       - name: product
-         identifier: gz_raw_product
-         description: product catalog from Greenweez
-         columns:
+      - name: product
+        identifier: gz_raw_product
+        description: "Product catalog from Greenweez."
+        columns:
           - name: products_id
             tests:
-             - unique
-             - not_null
-       - name: ship
-         identifier: raw_gz_ship
-         description: all shipping from Greenweer
-         columns:
+              - unique
+              - not_null
+
+      - name: ship
+        identifier: raw_gz_ship
+        description: "All shipping data from Greenweez."
+        columns:
           - name: orders_id
             tests:
-             - unique
-             - not_null
+              - unique
+              - not_null
 
+models:
+  - name: int_orders_margin
+    description: "Description orders margin."
+    columns:
+      - name: orders_id
+        description: "Clé primaire."
+        tests:
+          - unique
+          - not_null
+
+  - name: int_orders_operational
+    description: "Description orders operational."
+    columns:
+      - name: orders_id
+        description: "Clé primaire."
+        tests:
+          - unique
+          - not_null
+  - name: finance_days
+    columns:
+      - name: date_date
+        description: "Clé primaire."
+        tests:
+          - unique
+          - not_null
+  - name: int_sales_margin
+    columns:
+      - name: orders_id
+        description: "Clé primaire."
+        tests:
+          - not_null
